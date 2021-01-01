@@ -166,6 +166,15 @@ class Game extends React.Component {
     return collisionButton;
   }
 
+  renderConflictState = (isConflictState) => {
+    let c = []
+    if (isConflictState) {
+      c.push(this.createVisualsForCollisions(this.state.collisionMeta))
+      c.push(this.createButtonsForCollisions(this.state.collisionMeta, this.priorityClick))
+      return c;
+    }
+  }
+
   isAnyPreferenceSelected = (collisions) => {
     collisions.forEach((train) => {
       if (train.userSelected) {
@@ -178,10 +187,6 @@ class Game extends React.Component {
 
   render() {
 
-    const currentConflictState = this.state.isConflict;
-
-    if (currentConflictState) {
-
       return (
         <div className="game">
 
@@ -193,30 +198,11 @@ class Game extends React.Component {
             <Routes />
           </div>
 
-          
-
-          {this.createVisualsForCollisions(this.state.collisionMeta)}
-
-          {this.createButtonsForCollisions(this.state.collisionMeta, this.priorityClick)}
-
+          {this.renderConflictState(this.state.isConflict)}
 
         </div>
-        );
-      } else {
-        return (
-          <div className="game">
-
-            <div className="toggle">
-              <Detection onClick={i => this.handleToggleClick(i)} />
-            </div>
-
-            <div className="path">
-              <Routes />
-            </div>
-          </div>
-        );
-    }
-}
+      );
+  }
 }
   
   // ========================================
