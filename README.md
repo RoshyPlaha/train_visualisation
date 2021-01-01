@@ -68,3 +68,8 @@ This section has moved here: [https://facebook.github.io/create-react-app/docs/d
 ### `npm run build` fails to minify
 
 This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+
+
+https://www.npmjs.com/package/react-svg-draw
+https://css-tricks.com/a-trick-that-makes-drawing-svg-lines-way-easier/ 
+https://stackoverflow.com/questions/54112231/is-it-possible-to-create-a-glow-effect-in-svg 

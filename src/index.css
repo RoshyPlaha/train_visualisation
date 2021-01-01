@@ -1,13 +1,47 @@
 body {
-  margin: 0;
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
-    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
-    sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-}
+    font: 14px "Century Gothic", Futura, sans-serif;
+    margin: 20px;
+  }
+  
+  ol, ul {
+    padding-left: 30px;
+  }
 
-code {
-  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
-    monospace;
-}
+  .collision {
+    stroke-dasharray: 1;
+    stroke-dashoffset: 1;
+    animation: dash 1s ease infinite; /*alternate infinite; */
+    filter: url(#red-glow);
+    position: absolute;
+    z-index: -1;
+  }
+
+  .path {
+    position: absolute;
+    z-index: -1;
+  }
+
+  .svgRoutes {
+    position: absolute;
+    z-index: -1;
+  }
+
+  .priorityButton {
+    position: relative;
+    top: 100px;
+    left: 10px;
+  }
+
+  .game {
+    position: relative
+  }
+
+  
+  @keyframes dash {
+    from {
+      stroke-dashoffset: 1;
+    }
+    to {
+      stroke-dashoffset: 0;
+    }
+  }
