@@ -11,6 +11,10 @@ function Detection(props) {
   )
 }
 
+function ButtonPriority(props) {
+  return <button key={props.headcode} className="priorityButton" onClick={props.onClick}>Prioritise {props.headcode}</button>
+}
+
 const Routes = ({}) => (
     <SVG height="1000" width="2000">
       <path className="path" d="M 10 10 l 90 0 l 90 60" fill="transparent" stroke="red" pathLength="1"/>
@@ -19,7 +23,7 @@ const Routes = ({}) => (
     </SVG>
 );
 
-const Collision = ({ collision_path, line_stroke , train}) => (
+const Collision = ({ collision_path, line_stroke }) => (
 
     <div>
       <SVG height="210" width="500">
@@ -64,7 +68,7 @@ const Collision = ({ collision_path, line_stroke , train}) => (
 class Application extends React.Component {
   render () {
     return (
-        <div className="application">
+        <div className="application"> 
             <Helmet>
                 <style>{'body { background-color: black; }'}</style>
             </Helmet>
@@ -79,7 +83,6 @@ class Game extends React.Component {
     super(props);
     this.state = {
       stepNumber: 0,
-      xIsNext: true,
       isConflict: false,
     };
   }
@@ -90,13 +93,11 @@ class Game extends React.Component {
     if (this.state.isConflict) {
       
       this.setState({
-        xIsNext: !this.state.xIsNext,
         isConflict: false,
       });
     } else {
 
       this.setState({
-        xIsNext: !this.state.xIsNext,
         isConflict: true,
         collisionMeta: 
         [
@@ -104,13 +105,15 @@ class Game extends React.Component {
             headcode: "1A11",
             path: "M 10 10 l 90 0 l 90 60 l 90 0",
             hash: "1000",
-            line_stroke: "#FF0099"
+            line_stroke: "#FF0099",
+            userSelected: false,
           },
           {
             headcode: "2A22",
             path: "M 10 70 l 300 0",
             hash: "2000",
-            line_stroke: "#E6FB04"
+            line_stroke: "#E6FB04",
+            userSelected: false,
           }
         ]
       });
@@ -118,24 +121,59 @@ class Game extends React.Component {
     }
   }
 
-  priorityClick() {
-    console.log('clicked')
-    this.setState({
-      ...this.state,
-      
+  priorityClick(headcode) {
+    let expandedState = { ...this.state };
+    console.log('clicked ' + JSON.stringify(expandedState));
+
+
+    expandedState.collisionMeta.forEach((collision) => {
+      console.log(headcode + ' ' + collision.headcode)
+      if (collision.headcode == headcode) {
+        collision.userSelected = true
+      } else {
+        collision.userSelected = false
+      }
     })
+
+
+    this.setState({
+      ...expandedState,
+      isConflict: true,
+    })
+
+    console.log('new state: ' + this.state)
+
   }
 
   createVisualsForCollisions = (collisions) => {
-    console.log(collisions.length)
 
     return collisions.map((collision) => {
       return (
-      <div className="collision">
-        <Collision collision_path={collision.path} line_stroke={collision.line_stroke} train={collision.headcode} collision_hash={collision.hash}/>
+      <div key={collision.hash} className="collision">
+        <Collision key={collision.hash} collision_path={collision.path} line_stroke={collision.line_stroke} train={collision.headcode} collision_hash={collision.hash}/>
       </div>)
     })
+  }
 
+  createButtonsForCollisions = (collisions) => {
+
+    let collisionButton =  collisions.map((collision) => {
+      return (
+       <ButtonPriority key={collision.headcode} headcode={collision.headcode} onClick={() => this.priorityClick(collision.headcode)} />
+      )
+    });
+
+    return collisionButton;
+  }
+
+  isAnyPreferenceSelected = (collisions) => {
+    collisions.forEach((train) => {
+      if (train.userSelected) {
+        return train;
+      }
+    })
+
+    return '';
   }
 
   render() {
@@ -143,42 +181,41 @@ class Game extends React.Component {
     const currentConflictState = this.state.isConflict;
 
     if (currentConflictState) {
-    return (
-      <div className="game">
 
-         <div className="toggle">
-            <Detection onClick={i => this.handleToggleClick(i)} />
-          </div>
-
-        <div className="path">
-          <Routes />
-        </div>
-
-        {this.createVisualsForCollisions(this.state.collisionMeta)}
-
-        {/* <div className="collision">
-          <Collision collision_path="M 10 10 l 90 0 l 90 60 l 90 0" line_stroke="#FF0099" train="2A22" collision_hash="1000"/>
-        </div>
-        <div className="collision">
-          <Collision collision_path="M 10 70 l 300 0" line_stroke="#E6FB04" train="1A11" collision_hash="2000"/>
-        </div> */}
-
-        <button className="priorityButton" onClick={this.priorityClick}>Prioritise 2A22</button>
-        <button className="priorityButton" onClick={this.priorityClick} >Prioritise 1A11</button>
-      </div>
-      );
-    } else {
       return (
         <div className="game">
+
           <div className="toggle">
-            <Detection onClick={i => this.handleToggleClick(i)} />
-          </div>
+              <Detection onClick={i => this.handleToggleClick(i)} />
+            </div>
+
           <div className="path">
             <Routes />
           </div>
+
+          
+
+          {this.createVisualsForCollisions(this.state.collisionMeta)}
+
+          {this.createButtonsForCollisions(this.state.collisionMeta, this.priorityClick)}
+
+
         </div>
-      );
-  }
+        );
+      } else {
+        return (
+          <div className="game">
+
+            <div className="toggle">
+              <Detection onClick={i => this.handleToggleClick(i)} />
+            </div>
+
+            <div className="path">
+              <Routes />
+            </div>
+          </div>
+        );
+    }
 }
 }
   
