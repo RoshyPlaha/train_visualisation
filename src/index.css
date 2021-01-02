@@ -28,14 +28,41 @@ body {
 
   .priorityButton {
     position: relative;
-    top: 100px;
+    top: 160px;
     left: 10px;
+    background-color: #050801;
+    padding: 10px 10px;
+    margin: 10px 10px;
+    color: #03e9f4;
+    font-size: 14px;
+    text-decoration: none;
+    text-transform: uppercase;
+    overflow: hidden;
+    transition: 0.5s;
+    letter-spacing: 1px;
+  }
+
+  .priorityButton:hover
+  {
+      background:#000000 ;
+      color: #eaeaea;
+      box-shadow: 0 0 5px #3d4a43,
+                  0 0 20px #3d4a43,
+                  0 0 30px #3d4a43,
+                  0 0 15px #3d4a43;
   }
 
   .resetButton {
     position: relative;
-    top: 100px;
-    left: 20px
+    top: 160px;
+    left: 20px;
+    color: #050801;
+  }
+
+  .triggerButton {
+    background-color: grey;
+    position: relative;
+    top: 700px;
   }
 
   .game {

@@ -6,17 +6,20 @@ import Helmet from 'react-helmet'
 
 function Detection(props) {
   return (
-    <button onClick={props.onClick}>
+    <button className="triggerButton" onClick={props.onClick}> Simulate Conflict
     </button>
   )
 }
 
 function ButtonReset(props) {
-  return <button key="reset" className="resetButton" onClick={props.onClick}>Reset Priority</button>
+  return  (<a key="reset" className="resetButton" href="#" onClick={props.onClick}>
+  Reset Priority 
+</a>)
 }
 
 function ButtonPriority(props) {
-  return <button key={props.headcode} className="priorityButton" onClick={props.onClick}>Prioritise {props.headcode}</button>
+  console.log("this is colour " + props.colour)
+  return <a key={props.headcode} href="#" className="priorityButton" onClick={props.onClick} style={{"background-color":"black"}, {"color": props.colour}} > <span>Prioritise {props.headcode} </span></a>
 }
 
 const Routes = ({}) => (
@@ -176,7 +179,7 @@ class Game extends React.Component {
 
     let collisionButton =  collisions.map((collision) => {
       return (
-       <ButtonPriority key={collision.headcode} headcode={collision.headcode} onClick={() => this.priorityClick(collision.headcode)} />
+       <ButtonPriority key={collision.headcode} headcode={collision.headcode} colour={collision.line_stroke} onClick={() => this.priorityClick(collision.headcode)} />
       )
     });
 
@@ -235,7 +238,6 @@ class Game extends React.Component {
           </div>
 
           {this.renderConflictState(this.state.isConflict)}
-
         </div>
       );
   }
