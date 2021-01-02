@@ -11,6 +11,10 @@ function Detection(props) {
   )
 }
 
+function ButtonReset(props) {
+  return <button key="reset" className="resetButton" onClick={props.onClick}>Reset Priority</button>
+}
+
 function ButtonPriority(props) {
   return <button key={props.headcode} className="priorityButton" onClick={props.onClick}>Prioritise {props.headcode}</button>
 }
@@ -128,7 +132,7 @@ class Game extends React.Component {
 
     expandedState.collisionMeta.forEach((collision) => {
       console.log(headcode + ' ' + collision.headcode)
-      if (collision.headcode == headcode) {
+      if (collision.headcode === headcode) {
         collision.userSelected = true
       } else {
         collision.userSelected = false
@@ -155,6 +159,19 @@ class Game extends React.Component {
     })
   }
 
+  isAnyPreferenceSelected = () => {
+    
+    let selected_train_collision;
+    this.state.collisionMeta.forEach((collision) => {
+      if (collision.userSelected) {
+        console.log('found a match: ' + collision.headcode)
+        selected_train_collision =  collision;
+      }
+    });
+
+    return selected_train_collision;
+  }
+
   createButtonsForCollisions = (collisions) => {
 
     let collisionButton =  collisions.map((collision) => {
@@ -166,23 +183,42 @@ class Game extends React.Component {
     return collisionButton;
   }
 
+  resetButtonForCollisions = () => {
+    const expandedState = {...this.state};
+
+    expandedState.collisionMeta.forEach((collision) => {
+      collision.userSelected = false;
+    });
+
+    this.setState({
+      ...expandedState,
+      isConflict: true,
+    })
+  }
+
   renderConflictState = (isConflictState) => {
     let c = []
     if (isConflictState) {
-      c.push(this.createVisualsForCollisions(this.state.collisionMeta))
-      c.push(this.createButtonsForCollisions(this.state.collisionMeta, this.priorityClick))
+
+      // have any of the options been pressed, if so only render those. if not render all visuals for all lines
+      const trainPreference = this.isAnyPreferenceSelected();
+
+      if (trainPreference != null)  {
+        const x = []
+        x.push(trainPreference)
+        console.log('selected collision is: ' + JSON.stringify(x));
+        c.push(this.createVisualsForCollisions(x))
+        c.push(this.createButtonsForCollisions(this.state.collisionMeta, this.priorityClick))
+
+      } else {
+        c.push(this.createVisualsForCollisions(this.state.collisionMeta))
+        c.push(this.createButtonsForCollisions(this.state.collisionMeta, this.priorityClick))
+      }
+
+      // always allow the reset option
+      c.push(<ButtonReset key="reset" onClick={() => this.resetButtonForCollisions()}/>)
       return c;
     }
-  }
-
-  isAnyPreferenceSelected = (collisions) => {
-    collisions.forEach((train) => {
-      if (train.userSelected) {
-        return train;
-      }
-    })
-
-    return '';
   }
 
   render() {

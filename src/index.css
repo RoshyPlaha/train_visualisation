@@ -32,6 +32,12 @@ body {
     left: 10px;
   }
 
+  .resetButton {
+    position: relative;
+    top: 100px;
+    left: 20px
+  }
+
   .game {
     position: relative
   }
