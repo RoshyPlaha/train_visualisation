@@ -1,0 +1,15 @@
+version: '3.2'
+
+services:
+  database:
+    image: mongo
+    restart: always
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: admin
+      MONGO_INITDB_ROOT_PASSWORD: Password1*
+      MONGO_INITDB_DATABASE: roshydb
+    ports:
+      - '27017-27019:27017-27019'
+    volumes:
+      - ./mongo-init.js:/docker-entrypoint-initdb.d/mongo-init.js:ro
+      - ./mongo-volume:/data/db

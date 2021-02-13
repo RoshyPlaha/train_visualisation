@@ -1,0 +1,103 @@
+{
+    "conflict_id": "1", // perhaps hash of headcodes, tiploc, and shared routes
+    "problem_statement": {
+        "journey_details": [
+            {
+                "headcode": "1A11",
+                "train_uid": "qw122a",
+                "class_type": "1",
+                "routes": [
+                    {
+                        "route": "R123AM",
+                        "time_route_traversed": "00:01:00"
+                    },
+                    {
+                        "route": "R133AM",
+                        "time_route_traversed": "00:02:00"
+                    },
+                    {
+                        "route": "R144AM",
+                        "time_route_traversed": "00:03:00"
+                    }
+                ]
+            },
+            {
+                "headcode": "2A22",
+                "train_uid": "or045b",
+                "class_type": "2",
+                "routes": [
+                    {
+                        "route": "R123AM",
+                        "time_route_traversed": "00:01:00"
+                    },
+                    {
+                        "route": "R133AM",
+                        "time_route_traversed": "00:02:00"
+                    },
+                    {
+                        "route": "R166",
+                        "time_route_traversed": "00:03:00"
+                    }
+                ]
+            }
+        ]
+    },
+    "optimised_Solutions": {
+        "preferred": {
+            "id": "1",  // perhaps hash of headcodes, tiploc, and shared routes
+            "journey_details": [
+                {
+                    "headcode": "1A11",
+                    "train_uid": "qw122a",
+                    "class_type": "1",
+                    "routes": [
+                        {
+                            "route": "R123AM",
+                            "time_route_traversed": "00:01:00"
+                        },
+                        {
+                            "route": "R133AM",
+                            "time_route_traversed": "00:02:00"
+                        },
+                        {
+                            "route": "R144AM",
+                            "time_route_traversed": "00:03:00"
+                        }
+                    ]
+                },
+                {
+                    "headcode": "1A11",
+                    "train_uid": "or045b",
+                    "class_type": "1",
+                    "routes": [
+                        {
+                            "route": "R123AM",
+                            "time_route_traversed": "00:01:00"
+                        },
+                        {
+                            "route": "R133AM",
+                            "time_route_traversed": "00:02:00"
+                        },
+                        {
+                            "route": "R144AM",
+                            "time_route_traversed": "00:03:00"
+                        }
+                    ]
+                }
+            ],
+            "metadata": {
+                "methodology": "rerouting" // reordering, rerouting are two options
+            }
+        },
+        "alternatives": {
+            "IDs": ["1111", "2222", "3333"] // ID to other 'documents' in db, in a similar format to preferred structure above
+        }
+    },
+    "collison_metadata": {
+        "closest_tiploc": "BRGHTN",
+        "shared_routes": [
+            "R123AM",
+            "R133AM"
+        ]
+    }
+}

@@ -1,4 +1,5 @@
 import React from 'react';
+import axios from 'axios';
 import ReactDOM from 'react-dom';
 import SVG from 'react-svg-draw'
 import './index.css';
@@ -79,12 +80,60 @@ class Application extends React.Component {
             <Helmet>
                 <style>{'body { background-color: black; }'}</style>
             </Helmet>
-            <Game/>
+            {/* <Game/> */}
+
+            <ConflictTable/>
         </div>
     );
   }
 };
-  
+
+
+class ConflictTable extends React.Component {
+  constructor(props) {
+    super(props);
+      this.state = {
+        alternatives: [],
+        problemStatement: [],
+        journeyDetails: [],
+        collisionMetaData: {}
+      }
+
+  }
+
+  componentDidMount() {
+    
+    axios.get(`http://127.0.0.1:5000/?panel=6`)
+      .then(res => {
+        const alternatives = res.data.alternatives;
+        const problemStatement = res.data.problem_statement;
+        const journeyDetails = res.data.problem_statement.journey_details;
+        const collisionMetaData = res.data.collison_metadata;
+        // console.log(journeyDetails)
+        this.setState({ 
+            problemStatement: problemStatement,
+            alternatives: alternatives,
+            journeyDetails: journeyDetails,
+            collisionMetaData: collisionMetaData,
+          });
+      })
+  }
+
+  render() {
+    return (
+        <div>
+          <h2>Panel: 6</h2>
+          <h3>Problem </h3>
+          <h4> <ul> Trains {JSON.stringify(this.state.collisionMetaData.trains)} near {this.state.collisionMetaData.closest_tiploc} share routes {JSON.stringify(this.state.collisionMetaData.shared_routes)} 12:03:00 </ul></h4>
+          <h3>Solutions</h3>
+          <ul>
+            { this.state.alternatives.map(alt => <li key={alt.alternative_id}><p>Preference {alt.alternative_preference} is {alt.Solution.metadata.methodology} {alt.Solution.journey_details[0].headcode} saving {alt.Solution.metadata.savedTime}</p></li>)}
+          </ul>
+        </div>
+      )
+  }
+}
+
 class Game extends React.Component {
   constructor(props) {
     super(props);
