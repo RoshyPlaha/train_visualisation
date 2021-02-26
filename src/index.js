@@ -1,16 +1,12 @@
 import React from 'react';
 import axios from 'axios';
 import ReactDOM from 'react-dom';
-import SVG from 'react-svg-draw'
 import './index.css';
 import Helmet from 'react-helmet'
+import CanvasJSReact from './canvasjs.react';
 
-function Detection(props) {
-  return (
-    <button className="triggerButton" onClick={props.onClick}> Simulate Conflict
-    </button>
-  )
-}
+var CanvasJS = CanvasJSReact.CanvasJS;
+var CanvasJSChart = CanvasJSReact.CanvasJSChart;
 
 function ButtonReset(props) {
   return  (<a key="reset" className="resetButton" href="#" onClick={props.onClick}>
@@ -18,60 +14,144 @@ function ButtonReset(props) {
 </a>)
 }
 
-function ButtonPriority(props) {
-  console.log("this is colour " + props.colour)
-  return <a key={props.headcode} href="#" className="priorityButton" onClick={props.onClick} style={{"background-color":"black"}, {"color": props.colour}} > <span>Prioritise {props.headcode} </span></a>
+class Graph extends React.Component {
+  constructor(props) {
+    super(props);
+      this.state = {
+        range: {
+          lowRange: new Date(2016, 0, 25, 18, 31),
+          highRange: new Date(2016, 0, 26, 0, 0) // highRange: new Date(2016, 0, 27, 17, 0)
+
+        },
+        data: [
+          {        
+            type: "line",
+            name: "1A11",
+            showInLegend: true,
+            dataPoints:  [
+              { label: "BRIGHTN", y: (new Date(2016, 0, 25, 18, 30)).getTime() },
+              { label: "PRSP", y: (new Date(2016, 0, 26, 12, 1)).getTime() },
+              { label: "HYWRDS", y: (new Date(2016, 0, 26, 3, 3)).getTime(), markerColor: "red", markerType: "circle", markerSize: 20 },
+              { label: "HSSKS", y: (new Date(2016, 0, 26, 6, 1)).getTime() },
+              { label: "BLCMB", y: (new Date(2016, 0, 26, 9, 1)).getTime() },
+              { label: "THBRDGS", y: (new Date(2016, 0, 26, 14, 1)).getTime() },
+              { label: "GTWCK", y: (new Date(2016, 0, 26, 17, 0)).getTime() },
+              { label: "HRLEY", y: (new Date(2016, 0, 26, 20, 1)).getTime() },
+              { label: "ECRYDN", y: (new Date(2016, 0, 26, 23, 2)).getTime() }
+            ]
+          },
+          {        
+            type: "line",
+            name: "3L44",
+            showInLegend: true,
+            dataPoints:  [
+              { label: "BRIGHTN", y: (new Date(2016, 0, 25, 22, 30)).getTime() },
+              { label: "PRSP", y: (new Date(2016, 0, 26, 13, 1)).getTime() },
+              { label: "HYWRDS", y: (new Date(2016, 0, 26, 3, 3)).getTime(),markerColor: "red", markerType: "circle", markerSize: 20 },
+              { label: "GTWCK", y: (new Date(2016, 0, 26, 14, 0)).getTime() },
+              { label: "ECRYDN", y: (new Date(2016, 0, 26, 17, 0)).getTime() }  
+            ]
+          }
+        ]
+      }
+  }
+
+  render() {
+    
+    console.log('they rendered me again!')
+    const options = {
+      title:{
+        text: "Train Graph"
+      },
+
+      axisY: {
+        title: "Time",
+        minimum: this.state.range.lowRange.getTime() + (200 * 60000), //(new Date(2016, 0, 25, 17, 30)).getTime(),    
+        maximum: this.state.range.highRange.getTime() - (60 * 60000), // need to add mire buffer here    
+        labelFormatter: function(e){
+          return CanvasJS.formatDate(e.value, "DD-MMM hh:mm TT");
+        }
+      },
+      axisX:{
+        title: "Tiplocs",
+        gridThickness: 2
+      },
+      data: this.state.data
+    }
+
+   return (
+     <div>
+       <CanvasJSChart options={options}
+       onRef = {ref => this.chart = ref}
+       />
+      <NavigationUp onClick={() => this.loadMoreDataTwo(2)} />
+     </div>
+   )
+  }
+
+  loadMoreDataTwo(hours) {
+    const low = this.state.range.lowRange;
+    const high = this.state.range.highRange;
+
+    const shifted_low = new Date(low.setHours(low.getHours()+hours))
+    const shifted_high = new Date(high.setHours(high.getHours()+hours))
+
+    this.setState({
+      ...this.state,
+      range: {
+        lowRange: shifted_low,
+        highRange: shifted_high
+      }
+    })
+
+    console.log(JSON.stringify(this.state.range.lowRange.getTime()))
+  }
+
+  loadMoreData(hours) {
+
+    const low = this.state.range.lowRange;
+    const high = this.state.range.highRange;
+
+    const shifted_low = low.setHours(low.getHours()+hours)
+    const shifted_high = high.setHours(high.getHours()+hours)
+
+    console.log('shifted low: ' + new Date(shifted_low))
+    console.log('shifted high: ' + new Date(shifted_high))
+
+    const trains = this.state.data
+
+    const new_train_set = []
+    trains.forEach((train) => {
+      const new_train = {
+        type: train.type,
+        name: train.name,
+        showInLegend: train.showInLegend,
+        dataPoints: []
+      }
+
+      new_train.dataPoints.push(train.dataPoints.filter((trainStop) => {
+        if (trainStop.y > low && trainStop.y <= high) {
+          trainStop.y = new Date(trainStop.y).toTimeString()
+          return trainStop
+        } else {
+          console.log('out of range')
+        }
+      }));
+
+      new_train_set.push(new_train)
+    })
+
+    console.log("hi: " + JSON.stringify(new_train_set))
+    this.setState(new_train_set)
+  }
 }
 
-const Routes = ({}) => (
-    <SVG height="1000" width="2000">
-      <path className="path" d="M 10 10 l 90 0 l 90 60" fill="transparent" stroke="red" pathLength="1"/>
-      <path className="path" d="M 70 10 l 240 0" stroke="black" fill="transparent" stroke="red" pathLength="1"/>
-      <path className="path" d="M 10 70 l 300 0" stroke="black" fill="transparent" stroke="red" pathLength="1"/>
-    </SVG>
-);
+const NavigationUp = (props) => {
+  return (
+    <button onClick={props.onClick}>+ 2 hours</button>
+  )
+}
 
-const Collision = ({ collision_path, line_stroke }) => (
-
-    <div>
-      <SVG height="210" width="500">
-
-      <svg viewBox="0 0 400 400">
-      <defs>
-          <filter id="red-glow" filterUnits="userSpaceOnUse"
-                  x="-50%" y="-50%" width="200%" height="200%">
-            {/* <!-- blur the text at different levels--> */}
-            <feGaussianBlur in="SourceGraphic" stdDeviation="5" result="blur5"/>
-            <feGaussianBlur in="SourceGraphic" stdDeviation="10" result="blur10"/>
-            <feGaussianBlur in="SourceGraphic" stdDeviation="20" result="blur20"/>
-            <feGaussianBlur in="SourceGraphic" stdDeviation="30" result="blur30"/>
-            <feGaussianBlur in="SourceGraphic" stdDeviation="50" result="blur50"/>
-
-            <feMerge result="blur-merged">
-              <feMergeNode in="blur10"/>
-              <feMergeNode in="blur20"/>
-              <feMergeNode in="blur30"/>
-              <feMergeNode in="blur50"/>
-            </feMerge>
-            {/* <!-- recolour the merged blurs red--> */}
-            <feColorMatrix result="red-blur" in="blur-merged" type="matrix"
-                          values="1 0 0 0 0
-                                  0 0.06 0 0 0
-                                  0 0 0.44 0 0
-                                  0 0 0 1 0" />
-            <feMerge>
-              <feMergeNode in="red-blur"/>       
-              <feMergeNode in="blur5"/>         
-              <feMergeNode in="SourceGraphic"/>
-            </feMerge>
-          </filter>
-        </defs>
-        </svg>
-        <path className="collision" d={collision_path} fill="transparent" stroke={line_stroke} pathLength="1"/>
-      </SVG>
-  </div>
-);
- 
 
 class Application extends React.Component {
   render () {
@@ -80,9 +160,8 @@ class Application extends React.Component {
             <Helmet>
                 <style>{'body { background-color: black; }'}</style>
             </Helmet>
-            {/* <Game/> */}
 
-            <ConflictTable/>
+            <Graph/>
         </div>
     );
   }
@@ -177,77 +256,6 @@ class Game extends React.Component {
     }
   }
 
-  priorityClick(headcode) {
-    let expandedState = { ...this.state };
-    console.log('clicked ' + JSON.stringify(expandedState));
-
-
-    expandedState.collisionMeta.forEach((collision) => {
-      console.log(headcode + ' ' + collision.headcode)
-      if (collision.headcode === headcode) {
-        collision.userSelected = true
-      } else {
-        collision.userSelected = false
-      }
-    })
-
-
-    this.setState({
-      ...expandedState,
-      isConflict: true,
-    })
-
-    console.log('new state: ' + this.state)
-
-  }
-
-  createVisualsForCollisions = (collisions) => {
-
-    return collisions.map((collision) => {
-      return (
-      <div key={collision.hash} className="collision">
-        <Collision key={collision.hash} collision_path={collision.path} line_stroke={collision.line_stroke} train={collision.headcode} collision_hash={collision.hash}/>
-      </div>)
-    })
-  }
-
-  isAnyPreferenceSelected = () => {
-    
-    let selected_train_collision;
-    this.state.collisionMeta.forEach((collision) => {
-      if (collision.userSelected) {
-        console.log('found a match: ' + collision.headcode)
-        selected_train_collision =  collision;
-      }
-    });
-
-    return selected_train_collision;
-  }
-
-  createButtonsForCollisions = (collisions) => {
-
-    let collisionButton =  collisions.map((collision) => {
-      return (
-       <ButtonPriority key={collision.headcode} headcode={collision.headcode} colour={collision.line_stroke} onClick={() => this.priorityClick(collision.headcode)} />
-      )
-    });
-
-    return collisionButton;
-  }
-
-  resetButtonForCollisions = () => {
-    const expandedState = {...this.state};
-
-    expandedState.collisionMeta.forEach((collision) => {
-      collision.userSelected = false;
-    });
-
-    this.setState({
-      ...expandedState,
-      isConflict: true,
-    })
-  }
-
   renderConflictState = (isConflictState) => {
     let c = []
     if (isConflictState) {
@@ -278,13 +286,13 @@ class Game extends React.Component {
       return (
         <div className="game">
 
-          <div className="toggle">
+          {/* <div className="toggle">
               <Detection onClick={i => this.handleToggleClick(i)} />
             </div>
 
           <div className="path">
             <Routes />
-          </div>
+          </div> */}
 
           {this.renderConflictState(this.state.isConflict)}
         </div>
